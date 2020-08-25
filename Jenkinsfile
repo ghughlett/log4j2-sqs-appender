@@ -91,7 +91,7 @@ pipeline {
                 echo "Building ${projectArtifactId}:${projectVersion}"
 
                 sh '''
-                    mvn build-helper:parse-version
+                    mvn build-helper:parse-version -DpropertyPrefix=parsedVersion
                 '''
                 echo "majorVersion: ${parsedVersion.majorVersion}"
                 echo "minorVersion: ${parsedVersion.minorVersion}"
