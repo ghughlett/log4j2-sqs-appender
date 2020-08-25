@@ -29,6 +29,9 @@
                         <goals>
                             <goal>parse-version</goal>
                         </goals>
+                        <configuration>
+                            <propertyPrefix>parsedVersion</propertyPrefix>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>released-version</id>
