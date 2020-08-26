@@ -4,7 +4,7 @@
     <artifactId>log4j2-sqs-appender</artifactId>
     <version>1.0.2-SNAPSHOT</version>
     <scm>
-        <connection>scm:git:https://github.com/ghughlett/log4j2-sqs-appender.git</connection>
+        <connection>scm:git:https://ghughlett:1LoveGitHub@github.com/ghughlett/log4j2-sqs-appender.git</connection>
         <developerConnection>scm:git:https://github.com/ghughlett/log4j2-sqs-appender.git</developerConnection>
         <url>https://ghughlett:1LoveGitHub@github.com/ghughlett/log4j2-sqs-appender.git</url>
     </scm>
