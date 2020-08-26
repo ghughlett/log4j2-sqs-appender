@@ -90,14 +90,19 @@ pipeline {
                 }
                 echo "Merging ${projectArtifactId}:${projectGroupId}:{projectVersion}"
 
-			    withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-			        sh '''
-			            git commit -am "release ${projectArtifactId}:${projectVersion} updated"
-                        //git remote set-url origin https://github.com/ghughlett/log4j2-sqs-appender
-                        git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/ghughlett/log4j2-sqs-appender
-                        git tag -f $CURRENT_VERSION
-                        git push origin master --follow-tags
-                    '''
+			    //withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+			    //    sh '''
+			    //        git commit -am "release ${projectArtifactId}:${projectVersion} updated"
+                //        //git remote set-url origin https://github.com/ghughlett/log4j2-sqs-appender
+                //        git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/ghughlett/log4j2-sqs-appender
+                //        git tag -f $CURRENT_VERSION
+                //        git push origin master --follow-tags
+                //    '''
+                //}
+
+                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
+                    sh 'mvn scm:checkin -Dmessage="checkin"'
+                    sh 'mvn scm:tag -Dtag="$CURRENT_VERSION"'
                 }
             }
 			post {

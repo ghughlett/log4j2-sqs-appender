@@ -3,18 +3,10 @@
     <groupId>com.avioconsulting.framework</groupId>
     <artifactId>log4j2-sqs-appender</artifactId>
     <version>1.0.2-SNAPSHOT</version>
-    <!--
     <scm>
         <connection>scm:git:https://github.com/ghughlett/log4j2-sqs-appender.git</connection>
-        <url>https://ghughlett:1LoveGitHub@github.com/ghughlett/log4j2-sqs-appender.git</url>
-        <tag>HEAD</tag>
-    </scm>
-    -->
-    <scm>
-        <connection>git:https://github.com/ghughlett/log4j2-sqs-appender.git</connection>
         <developerConnection>scm:git:https://github.com/ghughlett/log4j2-sqs-appender.git</developerConnection>
         <url>https://ghughlett:1LoveGitHub@github.com/ghughlett/log4j2-sqs-appender.git</url>
-        <tag>HEAD</tag>
     </scm>
 
     <properties>
