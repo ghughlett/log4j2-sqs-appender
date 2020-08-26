@@ -104,8 +104,8 @@ pipeline {
                     withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
                         sh '''
                             mvn scm:validate
-                            mvn scm:checkin -Dmessage="checkin"
-                            mvn scm:tag -Dtag="$CURRENT_VERSION"
+                            mvn scm:checkin -Dmessage="checkin" -DUsername=ghughlett -DPassword=1LoveGitHub
+                            mvn scm:tag -Dtag="$CURRENT_VERSION" -DUsername=ghughlett -DPassword=1LoveGitHub
                         '''
                     }
                 }
