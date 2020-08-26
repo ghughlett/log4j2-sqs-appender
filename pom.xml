@@ -8,7 +8,7 @@
         <developerConnection>scm:git:https://ghughlett:1LoveGitHub@github.com/ghughlett/log4j2-sqs-appender.git</developerConnection>
         <url>https://ghughlett:1LoveGitHub@github.com/ghughlett/log4j2-sqs-appender.git</url>
     </scm>
-  
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
