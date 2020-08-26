@@ -4,7 +4,7 @@ pipeline {
 	environment {
 	  MVN_SET = credentials('maven_secret_settings')
 	  SKIP_PREPARE = 'true'
-	  CURRENT_VERSION='v1.0.2'
+	  CURRENT_VERSION='v1.0.3'
 	}
 	agent any
     options {
@@ -20,7 +20,7 @@ pipeline {
             		branchName=env.BRANCH_NAME
             		echo branchName
 			    }
-                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
+                withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
        				sh 'mvn clean compile -s $MVN_SET help:effective-settings'
                 }
 			}
@@ -36,7 +36,7 @@ pipeline {
 		}
     	stage('Unit Test') {
       		steps {
-                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
+                withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
                     sh "mvn clean test"
                 }
             }
@@ -101,7 +101,7 @@ pipeline {
                 //}
 
                 withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
+                    withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
                         sh '''
                             mvn scm:validate
                             mvn scm:checkin -Dmessage="checkin" -DUsername=ghughlett -DPassword=1LoveGitHub
@@ -126,7 +126,7 @@ pipeline {
     	        environment name: 'SKIP_PREPARE', value: 'true'
     	    }
             steps {
-                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
+                withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
          	        sh 'mvn clean deploy'
                 }
             }
@@ -156,7 +156,7 @@ pipeline {
                 echo "Updating ${projectArtifactId}:${projectGroupId}:{projectVersion}-SNAPSHOT"
 
                 withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
+                    withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
                         sh 'mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT'
                     }
                 }
