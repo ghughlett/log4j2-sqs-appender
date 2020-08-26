@@ -1,5 +1,4 @@
 String branchName='develop'
-mvnProps = standardMavenConfig(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327')
 
 pipeline {
 	environment {
@@ -20,7 +19,7 @@ pipeline {
             		branchName=env.BRANCH_NAME
             		echo branchName
 			    }
-                withMaven(mvnProps) {
+                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
        				sh 'mvn clean compile -s $MVN_SET help:effective-settings'
                 }
 			}
@@ -36,7 +35,7 @@ pipeline {
 		}
     	stage('Unit Test') {
       		steps {
-                withMaven(mvnProps) {
+                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
                     sh "mvn clean test"
                 }
             }
@@ -116,7 +115,7 @@ pipeline {
     	        environment name: 'SKIP_PREPARE', value: 'true'
     	    }
             steps {
-                withMaven(mvnProps) {
+                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
          	        sh 'mvn clean deploy'
                 }
             }
@@ -145,7 +144,7 @@ pipeline {
                 }
                 echo "Updating ${projectArtifactId}:${projectGroupId}:{projectVersion}-SNAPSHOT"
 
-                withMaven(mvnProps) {
+                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
          	        sh 'mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT'
                 }
 
