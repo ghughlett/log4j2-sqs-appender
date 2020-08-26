@@ -100,12 +100,14 @@ pipeline {
                 //    '''
                 //}
 
-                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
-                    sh '''
-                        mvn scm:validate
-                        mvn scm:checkin -Dmessage="checkin"
-                        mvn scm:tag -Dtag="$CURRENT_VERSION"
-                    '''
+                withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                    withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
+                        sh '''
+                            mvn scm:validate
+                            mvn scm:checkin -Dmessage="checkin"
+                            mvn scm:tag -Dtag="$CURRENT_VERSION"
+                        '''
+                    }
                 }
             }
 			post {
