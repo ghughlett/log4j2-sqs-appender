@@ -1,10 +1,9 @@
-gitCredential = 'adesjardin-bitbucket'
 String branchName='develop'
-String repository
 
 pipeline {
 	environment {
 	  MVN_SET = credentials('maven_secret_settings')
+	  SKIP_PREPARE = 'true'
 	}
 	agent any
     options {
@@ -17,40 +16,39 @@ pipeline {
 		stage('Build') {
 			steps {
 			    script {
-					if (env.BRANCH_NAME == 'master') {
-	            		echo 'Found the MASTER branch'
-	        		}
-	        		else {
-	            		//echo env.BRANCH_NAME
-	            		branchName=env.BRANCH_NAME
-	            		echo branchName
-	            		repository = "git@" + env.GIT_URL.replaceFirst(".+://", "").replaceFirst("/", ":")
-	        		}
+            		branchName=env.BRANCH_NAME
+            		echo branchName
 			    }
-   				sh 'mvn clean compile -s $MVN_SET help:effective-settings'
+                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
+       				sh 'mvn clean compile -s $MVN_SET help:effective-settings'
+                }
+			}
+			post {
+				success {
+					echo '******** Build succeeded'
+				}
+				failure {
+					echo '!!!!!!! Build failed'
+					error('Stopping the build')
+				}
 			}
 		}
     	stage('Unit Test') {
       		steps {
-              sh 'mvn clean test -s $MVN_SET'
-              //echo 'skipping this step'
-      		}
-    	}
-        stage('Project Specifics') {
-            steps {
-                sh '''
-                    mvn build-helper:parse-version
-                echo "majorVersion: ${parsedVersion.majorVersion}"
-                echo "minorVersion: ${parsedVersion.minorVersion}"
-                echo "incrementalVersion: ${parsedVersion.incrementalVersion}"
-                echo "qualifier: ${parsedVersion.qualifier}"
-                echo "nextMajorVersion: ${parsedVersion.nextMajorVersion}"
-                echo "nextMinorVersion: ${parsedVersion.nextMinorVersion}"
-                echo "nextIncrementalVersion: ${parsedVersion.nextIncrementalVersion}"
-                '''
-
+                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
+                    sh "mvn clean test"
+                }
             }
-        }
+			post {
+				success {
+					echo '******** Unit Test succeeded'
+				}
+				failure {
+					echo '!!!!!!! Unit Test failed'
+					error('Stopping the build')
+				}
+			}
+    	}
     	stage('Release Notes Generation') {
     	    when {
     	        branch 'master'
@@ -76,9 +74,10 @@ pipeline {
 				}
 			}
     	}
-        stage('Prepare Master for Next Release') {
+        stage('Release-Merge Master') {
     	    when {
     	        branch 'master'
+    	        environment name: 'SKIP_PREPARE', value: 'true'
     	    }
             steps {
                 script {
@@ -88,11 +87,7 @@ pipeline {
                     projectVersion = pom.getVersion()
                     projectName = pom.getName()
                 }
-                echo "Updating ${projectArtifactId}:${projectGroupId}:{projectVersion}-SNAPSHOT"
-
-                sh '''
-                    mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
-                '''
+                echo "Merging ${projectArtifactId}:${projectGroupId}:{projectVersion}"
 
 			    withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
 			        sh '''
@@ -106,20 +101,23 @@ pipeline {
             }
 			post {
 				success {
-					echo '******** Prepare Release succeeded'
+					echo '******** Merge Master succeeded'
 				}
 				failure {
-					echo '!!!!!!! Prepare Release failed'
+					echo '!!!!!!! Merge Master failed'
 					error('Stopping the build')
 				}
 			}
 		}
-        stage('GitHub Deployment') {
+        stage('Release-Artifact Deployment') {
     	    when {
     	        branch 'master'
+    	        environment name: 'SKIP_PREPARE', value: 'true'
     	    }
             steps {
-     	      sh 'mvn clean deploy -s $MVN_SET'
+                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
+         	        sh 'mvn clean deploy'
+                }
             }
 			post {
 				success {
@@ -127,6 +125,45 @@ pipeline {
 				}
 				failure {
 					echo '!!!!!!! GitHub Deployment failed'
+					error('Stopping the build')
+				}
+			}
+		}
+        stage('Prepare Master for Next Release') {
+    	    when {
+    	        branch 'master'
+    	        environment name: 'SKIP_PREPARE', value: 'false'
+    	    }
+            steps {
+                script {
+                    pom = readMavenPom(file: 'pom.xml')
+                    projectArtifactId = pom.getArtifactId()
+                    projectGroupId = pom.getGroupId()
+                    projectVersion = pom.getVersion()
+                    projectName = pom.getName()
+                }
+                echo "Updating ${projectArtifactId}:${projectGroupId}:{projectVersion}-SNAPSHOT"
+
+                withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
+         	        sh 'mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT'
+                }
+
+			    withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+			        sh '''
+			            git add .
+			            git commit -am "release ${projectArtifactId}:${projectVersion} updated"
+                        git remote set-url origin https://github.com/ghughlett/log4j2-sqs-appender
+                        git tag af v${projectVersion}
+                        git push origin master --follow-tags
+                    '''
+                }
+            }
+			post {
+				success {
+					echo '******** Prepare Master for Next Release succeeded'
+				}
+				failure {
+					echo '!!!!!!! Prepare Master for Next Release failed'
 					error('Stopping the build')
 				}
 			}
