@@ -109,6 +109,7 @@ pipeline {
 					error('Stopping the build')
 				}
 			}
+		}
         stage('Release-Artifact Deployment') {
     	    when {
     	        branch 'master'
@@ -168,6 +169,5 @@ pipeline {
 				}
 			}
 		}
-	  }
 	}
 }
