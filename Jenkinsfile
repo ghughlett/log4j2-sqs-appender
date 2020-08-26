@@ -101,8 +101,11 @@ pipeline {
                 //}
 
                 withMaven(mavenSettingsConfig: '71d7c536-d52e-4ade-9b4e-7cc7a196a327') {
-                    sh 'mvn scm:checkin -Dmessage="checkin"'
-                    sh 'mvn scm:tag -Dtag="$CURRENT_VERSION"'
+                    sh '''
+                        mvn scm:validate
+                        mvn scm:checkin -Dmessage="checkin"
+                        mvn scm:tag -Dtag="$CURRENT_VERSION"
+                    '''
                 }
             }
 			post {
