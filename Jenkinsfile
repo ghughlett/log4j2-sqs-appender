@@ -76,7 +76,7 @@ pipeline {
 				}
 			}
     	}
-        stage('Prepare Release') {
+        stage('Prepare Master for Next Release') {
     	    when {
     	        branch 'master'
     	    }
@@ -88,21 +88,19 @@ pipeline {
                     projectVersion = pom.getVersion()
                     projectName = pom.getName()
                 }
-                echo "Building ${projectArtifactId}:${projectVersion}"
+                echo "Updating ${projectArtifactId}:${projectGroupId}:{projectVersion}-SNAPSHOT"
 
                 sh '''
                     mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
                 '''
 
-
 			    withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                   //mvn --batch-mode -s $MVN_SET release:prepare release:perform -Dusername=${GIT_USERNAME} -Dpassword=${GIT_PASSWORD}
 			        sh '''
 			            git add .
 			            git commit -am "release ${projectArtifactId}:${projectVersion} updated"
                         git remote set-url origin https://github.com/ghughlett/log4j2-sqs-appender
-                        git tag af v1.0.1
-                        git push origin develop --tags
+                        git tag af v${projectVersion}
+                        git push origin master --follow-tags
                     '''
                 }
             }
