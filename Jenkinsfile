@@ -59,7 +59,6 @@ pipeline {
                     touch changelog.txt
                     git log --pretty="%h - %s%b (%an)" $(git tag | tail -n1)...HEAD > changelog.txt
                     git add changelog.txt
-                    git commit -m "added release notes"
 	             '''
               }
       		}
@@ -92,7 +91,6 @@ pipeline {
 
 			    withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
 			        sh '''
-			            git add .
 			            git commit -am "release ${projectArtifactId}:${projectVersion} updated"
                         git remote set-url origin https://github.com/ghughlett/log4j2-sqs-appender
                         git tag af v${projectVersion}
