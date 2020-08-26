@@ -9,7 +9,6 @@
         <aws.sdk.version>1.11.368</aws.sdk.version>
         <log4j.version>2.13.2</log4j.version>
         <github.global.server>github</github.global.server>
-        <maven.versions.plugin>2.8.1</maven.versions.plugin>
     </properties>
     <build>
         <plugins>
