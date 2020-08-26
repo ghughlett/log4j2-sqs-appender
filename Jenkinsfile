@@ -40,7 +40,6 @@ pipeline {
             steps {
                 sh '''
                     mvn build-helper:parse-version
-                '''
                 echo "majorVersion: ${parsedVersion.majorVersion}"
                 echo "minorVersion: ${parsedVersion.minorVersion}"
                 echo "incrementalVersion: ${parsedVersion.incrementalVersion}"
@@ -48,6 +47,7 @@ pipeline {
                 echo "nextMajorVersion: ${parsedVersion.nextMajorVersion}"
                 echo "nextMinorVersion: ${parsedVersion.nextMinorVersion}"
                 echo "nextIncrementalVersion: ${parsedVersion.nextIncrementalVersion}"
+                '''
 
             }
         }
@@ -91,20 +91,8 @@ pipeline {
                 echo "Building ${projectArtifactId}:${projectVersion}"
 
                 sh '''
-                    mvn build-helper:parse-version
-                    echo 'majorVersion: ${parsedVersion.majorVersion}'
-                    echo 'minorVersion: ${parsedVersion.minorVersion}'
-                    echo 'incrementalVersion: ${parsedVersion.incrementalVersion}'
-                    echo 'qualifier: ${parsedVersion.qualifier}'
-                    echo 'nextMajorVersion: ${parsedVersion.nextMajorVersion'
-                    echo 'nextMinorVersion: ${parsedVersion.nextMinorVersion}'
-                    echo 'nextIncrementalVersion: ${parsedVersion.nextIncrementalVersion}'
-                    echo 'majorVersion: ${parsedVersion.majorVersion}'
+                    mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
                 '''
-
-                //sh '''
-                //    mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}
-                //'''
 
 
 			    withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
