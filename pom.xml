@@ -3,11 +3,20 @@
     <groupId>com.avioconsulting.framework</groupId>
     <artifactId>log4j2-sqs-appender</artifactId>
     <version>1.0.2-SNAPSHOT</version>
+    <!--
     <scm>
         <connection>scm:git:https://github.com/ghughlett/log4j2-sqs-appender.git</connection>
         <url>https://ghughlett:1LoveGitHub@github.com/ghughlett/log4j2-sqs-appender.git</url>
         <tag>HEAD</tag>
     </scm>
+    -->
+    <scm>
+        <connection>git:https://github.com/ghughlett/log4j2-sqs-appender.git</connection>
+        <developerConnection>scm:git:https://github.com/ghughlett/log4j2-sqs-appender.git</developerConnection>
+        <url>https://ghughlett:1LoveGitHub@github.com/ghughlett/log4j2-sqs-appender.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -17,6 +26,11 @@
     </properties>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>1.11.2</version>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
