@@ -4,14 +4,7 @@ pipeline {
 	environment {
 	  MVN_SET = credentials('maven_secret_settings')
 	  SKIP_PREPARE = 'true'
-      script {
-          pom = readMavenPom(file: 'pom.xml')
-          projectArtifactId = pom.getArtifactId()
-          projectGroupId = pom.getGroupId()
-          projectVersion = pom.getVersion()
-          CURRENT_VERSION=pom.getVersion()
-          projectName = pom.getName()
-      }
+	  CURRENT_VERSION='v1.0.1'
 	}
 	agent any
     options {
