@@ -93,7 +93,7 @@ pipeline {
 			        sh '''
 			            git commit -am "release ${projectArtifactId}:${projectVersion} updated"
                         git remote set-url origin https://github.com/ghughlett/log4j2-sqs-appender
-                        git tag -af ${projectVersion}
+                        git tag -f ${projectVersion}
                         git push origin master --follow-tags
                     '''
                 }
