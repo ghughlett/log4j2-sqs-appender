@@ -4,6 +4,14 @@ pipeline {
 	environment {
 	  MVN_SET = credentials('maven_secret_settings')
 	  SKIP_PREPARE = 'true'
+      script {
+          pom = readMavenPom(file: 'pom.xml')
+          projectArtifactId = pom.getArtifactId()
+          projectGroupId = pom.getGroupId()
+          projectVersion = pom.getVersion()
+          CURRENT_VERSION=pom.getVersion()
+          projectName = pom.getName()
+      }
 	}
 	agent any
     options {
@@ -91,11 +99,9 @@ pipeline {
 
 			    withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
 			        sh '''
-                        pom = readMavenPom(file: 'pom.xml')
-                        projectVersion = pom.getVersion()
 			            git commit -am "release ${projectArtifactId}:${projectVersion} updated"
                         git remote set-url origin https://github.com/ghughlett/log4j2-sqs-appender
-                        git tag -f ${projectVersion}
+                        git tag -f $CURRENT_VERSION
                         git push origin master --follow-tags
                     '''
                 }
