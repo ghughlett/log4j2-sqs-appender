@@ -2,23 +2,23 @@
 <metadata modelVersion="1.1.0">
   <groupId>com.avioconsulting.framework</groupId>
   <artifactId>log4j2-sqs-appender</artifactId>
-  <version>1.0.7-SNAPSHOT</version>
+  <version>1.0.8-SNAPSHOT</version>
   <versioning>
     <snapshot>
-      <timestamp>20200827.160941</timestamp>
+      <timestamp>20200827.165520</timestamp>
       <buildNumber>1</buildNumber>
     </snapshot>
-    <lastUpdated>20200827160941</lastUpdated>
+    <lastUpdated>20200827165520</lastUpdated>
     <snapshotVersions>
       <snapshotVersion>
         <extension>jar</extension>
-        <value>1.0.7-20200827.160941-1</value>
-        <updated>20200827160941</updated>
+        <value>1.0.8-20200827.165520-1</value>
+        <updated>20200827165520</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>1.0.7-20200827.160941-1</value>
-        <updated>20200827160941</updated>
+        <value>1.0.8-20200827.165520-1</value>
+        <updated>20200827165520</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
