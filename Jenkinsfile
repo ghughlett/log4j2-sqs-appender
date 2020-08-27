@@ -93,7 +93,8 @@ pipeline {
                 echo "Merging ${projectArtifactId}:${projectGroupId}:${projectVersion}"
 
                 script {
-                   tagName = readMavenPom(file: 'pom.xml').getVersion()
+                   def localTagName = readMavenPom(file: 'pom.xml').getVersion()
+                   tagName = "v"+localTagName
                    echo "Using tag $tagName"
                 }
 
