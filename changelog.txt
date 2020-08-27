@@ -1,4 +1,8 @@
+afb1455 - Merge branch 'master' of https://github.com/ghughlett/log4j2-sqs-appender (ghughlett)
+d86aa5f - checkin (avioconsulting-jenkins)
 d78bf01 - checkin (avioconsulting-jenkins)
+f18eb96 - [bug] git tag fails when it is there from previous- delete the current tag before running scm:tag
+ (ghughlett)
 0d55012 - checkin (avioconsulting-jenkins)
 c4663af - checkin (avioconsulting-jenkins)
 4ce55da - checkin (avioconsulting-jenkins)
