@@ -4,7 +4,7 @@ pipeline {
 	environment {
 	  MVN_SET = credentials('maven_secret_settings')
 	  SKIP_PREPARE = 'true'
-	  CURRENT_VERSION='v1.0.4'
+	  CURRENT_VERSION='v1.0.5' 
 	}
 	agent any
     options {
