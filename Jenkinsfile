@@ -99,7 +99,12 @@ pipeline {
                         sh '''
                             mvn build-helper:parse-version versions:set -DnewVersion=\'${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT\'
                         '''
-                        echo "Using tag v\${projectVersion}"
+                        script {
+                            def tagName = readMavenPom(file: 'pom.xml').getVersion()
+                            def tagName = "v\${projectVersion}"
+                            echo "Using tag $tagName"
+                        }
+
                         //sh '''
                         //    mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag="v\$projectVersion"
                         //'''
