@@ -1,3 +1,4 @@
+b8a433a - checkin (avioconsulting-jenkins)
 1e9dd26 - Merge branch 'master' of https://github.com/ghughlett/log4j2-sqs-appender (ghughlett)
 8f8f62b - checkin (avioconsulting-jenkins)
 eabfb94 - checkin (avioconsulting-jenkins)
@@ -14,3 +15,4 @@ c8747dc - Merge branch 'master' of https://github.com/ghughlett/log4j2-sqs-appen
  (ghughlett)
 8ec17d8 - checkin (avioconsulting-jenkins)
 bfec0ff - checkin (avioconsulting-jenkins)
+2a8da35 - checkin (avioconsulting-jenkins)
