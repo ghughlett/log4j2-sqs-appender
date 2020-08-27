@@ -9,7 +9,7 @@ pipeline {
 	  RUN_STAGE = 'false'
 	  SKIP_PREPARE = 'true'
 	  CURRENT_VERSION = 'v1.0.7'
-	  IS_SNAPSHOT = readMavenPom(file: 'pom.xml').getVersion.contains('SNAPSHOT')
+	  IS_SNAPSHOT = readMavenPom(file: 'pom.xml').version.endsWith('SNAPSHOT')
 	}
 	agent any
     options {
@@ -20,12 +20,13 @@ pipeline {
     }
 	stages {
 		stage('Build') {
+    	    when {
+    	        environment name: 'IS_SNAPSHOT', value: 'true'
+    	    }
 			steps {
 			    script {
             		branchName=env.BRANCH_NAME
             		echo branchName
-                	isSnapshot = readMavenPom(file: 'pom.xml').getVersion().contains('SNAPSHOT')
-            		echo isSnapshot
 			    }
                 withMaven(mavenSettingsConfig: mvnConfig) {
        				sh 'mvn clean compile help:effective-settings'
@@ -42,6 +43,9 @@ pipeline {
 			}
 		}
     	stage('Unit Test') {
+    	    when {
+    	        environment name: 'IS_SNAPSHOT', value: 'true'
+    	    }
       		steps {
                 withMaven(mavenSettingsConfig:  mvnConfig) {
                     sh "mvn clean test"
