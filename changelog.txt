@@ -1,0 +1,2 @@
+864ce0a - Merge branch 'master' of https://github.com/ghughlett/log4j2-sqs-appender (ghughlett)
+672cc82 - [test] Set tag to 1.0.5 (ghughlett)
