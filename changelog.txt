@@ -1,3 +1,6 @@
+88d0fef - [bug] syntax issue on properties (ghughlett)
+e9178c0 - [test] Testing non-snapshot (ghughlett)
+9297d26 - checkin (avioconsulting-jenkins)
 e1065af - checkin (avioconsulting-jenkins)
 3cb4917 - checkin (avioconsulting-jenkins)
 e507900 - checkin (avioconsulting-jenkins)
