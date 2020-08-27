@@ -2,6 +2,7 @@ String branchName='develop'
 String mvnConfig='606ddd86-1cb6-42f4-9362-f2108d05a89e'
 String gitHubCred='github-ghughlett'
 boolean isSnapshot=false
+String tagName
 
 pipeline {
 	environment {
@@ -91,6 +92,12 @@ pipeline {
 
                 echo "Merging ${projectArtifactId}:${projectGroupId}:${projectVersion}"
 
+                script {
+                   def tagName = readMavenPom(file: 'pom.xml').getVersion()
+                   echo "Using tag $tagName"
+                }
+
+
                 withCredentials([usernamePassword(credentialsId: gitHubCred, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                     withMaven(mavenSettingsConfig:  mvnConfig) {
                         sh '''
@@ -99,13 +106,10 @@ pipeline {
                         sh '''
                             mvn build-helper:parse-version versions:set -DnewVersion=\'${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT\'
                         '''
-                        script {
-                            def tagName = readMavenPom(file: 'pom.xml').getVersion()
-                            echo "Using tag $tagName"
-                        }
+                       echo "Still using tag $tagName"
 
                         //sh '''
-                        //    mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag="v\$projectVersion"
+                        //    mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag="v\$tagName"
                         //'''
                     }
                 }
