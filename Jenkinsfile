@@ -1,12 +1,12 @@
 String branchName='develop'
+String mvnConfig='606ddd86-1cb6-42f4-9362-f2108d05a89e'
+String gitCred='github-ghughlett'
 
 pipeline {
 	environment {
 	  MVN_SET = credentials('maven_secret_settings')
 	  SKIP_PREPARE = 'true'
 	  CURRENT_VERSION = 'v1.0.7'
-	  MVN_CONFIG = '606ddd86-1cb6-42f4-9362-f2108d05a89e'
-	  GIT_CRED = 'github-ghughlett'
 	}
 	agent any
     options {
@@ -22,8 +22,8 @@ pipeline {
             		branchName=env.BRANCH_NAME
             		echo branchName
 			    }
-                withMaven(mavenSettingsConfig: $MVN_CONFIG) {
-       				sh 'mvn clean compile -s $MVN_SET help:effective-settings'
+                withMaven(mavenSettingsConfig: mvnConfig) {
+       				sh 'mvn clean compile help:effective-settings'
                 }
 			}
 			post {
@@ -38,7 +38,7 @@ pipeline {
 		}
     	stage('Unit Test') {
       		steps {
-                withMaven(mavenSettingsConfig:  $MVN_CONFIG) {
+                withMaven(mavenSettingsConfig:  mvnConfig) {
                     sh "mvn clean test"
                 }
             }
@@ -57,7 +57,7 @@ pipeline {
     	        branch 'master'
     	    }
             steps {
-			  withCredentials([usernamePassword(credentialsId: $GIT_CRED, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+			  withCredentials([usernamePassword(credentialsId: gitCred, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
 			    sh '''
                     touch changelog.txt
                     git log --pretty="%h - %s%b (%an)" $(git tag | tail -n1)...HEAD > changelog.txt
@@ -91,8 +91,8 @@ pipeline {
                 }
                 echo "Merging ${projectArtifactId}:${projectGroupId}:{projectVersion}"
 
-                withCredentials([usernamePassword(credentialsId: $GIT_CRED, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    withMaven(mavenSettingsConfig:  $MVN_CONFIG) {
+                withCredentials([usernamePassword(credentialsId: gitCred, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                    withMaven(mavenSettingsConfig:  mvnConfig) {
                         sh '''
                             mvn scm:validate
                         '''
@@ -121,7 +121,7 @@ pipeline {
     	        environment name: 'SKIP_PREPARE', value: 'true'
     	    }
             steps {
-                withMaven(mavenSettingsConfig:  $MVN_CONFIG) {
+                withMaven(mavenSettingsConfig:  mvnConfig) {
          	        sh 'mvn clean deploy -s $MVN_SET'
                 }
             }
