@@ -4,8 +4,8 @@
   <artifactId>log4j2-sqs-appender</artifactId>
   <versioning>
     <versions>
-      <version>1.0.8-SNAPSHOT</version>
+      <version>1.0.9-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20200827165520</lastUpdated>
+    <lastUpdated>20200827211745</lastUpdated>
   </versioning>
 </metadata>
