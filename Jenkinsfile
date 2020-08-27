@@ -105,7 +105,7 @@ pipeline {
                         sh '''
                             mvn scm:validate
                             mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
-                            mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag="$CURRENT_VERSION"
+                            mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag=$CURRENT_VERSION
                         '''
                     }
                 }
