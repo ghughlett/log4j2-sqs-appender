@@ -107,11 +107,11 @@ pipeline {
                         sh '''
                             mvn build-helper:parse-version versions:set -DnewVersion=\'${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT\'
                         '''
-                       echo "Still using tag $tagName"
+                       echo "Will use tag $tagName"
 
-                        //sh '''
-                        //    mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag="v\$tagName"
-                        //'''
+                        sh '''
+                            mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag="v\$tagName"
+                        '''
                     }
                 }
             }
