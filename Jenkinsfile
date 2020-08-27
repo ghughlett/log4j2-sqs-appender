@@ -104,9 +104,7 @@ pipeline {
                     withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
                         sh '''
                             mvn scm:validate
-                            mvn build-helper:parse-version versions:set \
-                            -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT
-                            git tag -d $CURRENT_VERSION
+                            mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
                             mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag="$CURRENT_VERSION"
                         '''
                     }
