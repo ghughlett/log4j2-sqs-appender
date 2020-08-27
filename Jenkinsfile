@@ -101,7 +101,6 @@ pipeline {
                         '''
                         script {
                             def tagName = readMavenPom(file: 'pom.xml').getVersion()
-                            def tagName = "v\${projectVersion}"
                             echo "Using tag $tagName"
                         }
 
