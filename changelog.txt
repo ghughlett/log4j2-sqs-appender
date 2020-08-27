@@ -1,0 +1,2 @@
+86edccd - [bug] Correct withMaven syntax (ghughlett)
+8ecf5e6 - [feature] Increment final version to SNAPSHOT (ghughlett)
