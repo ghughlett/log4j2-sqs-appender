@@ -4,7 +4,7 @@ pipeline {
 	environment {
 	  MVN_SET = credentials('maven_secret_settings')
 	  SKIP_PREPARE = 'true'
-	  CURRENT_VERSION='v1.0.3'
+	  CURRENT_VERSION='v1.0.4'
 	}
 	agent any
     options {
@@ -104,8 +104,8 @@ pipeline {
                     withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
                         sh '''
                             mvn scm:validate
-                            mvn scm:checkin -Dmessage="checkin" -DUsername=ghughlett -DPassword=1LoveGitHub
-                            mvn scm:tag -Dtag="$CURRENT_VERSION" -DUsername=ghughlett -DPassword=1LoveGitHub
+                            mvn scm:checkin -Dmessage="checkin"
+                            mvn scm:tag -Dtag="$CURRENT_VERSION"
                         '''
                     }
                 }
@@ -157,18 +157,9 @@ pipeline {
 
                 withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                     withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
-                        sh 'mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT'
+                        mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
+                        mvn scm:checkin -Dmessage="checkin"
                     }
-                }
-
-			    withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-			        sh '''
-			            git add .
-			            git commit -am "release ${projectArtifactId}:${projectVersion} updated"
-                        git remote set-url origin https://github.com/ghughlett/log4j2-sqs-appender
-                        git tag af v${projectVersion}
-                        git push origin master --follow-tags
-                    '''
                 }
             }
 			post {
