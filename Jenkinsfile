@@ -1,6 +1,7 @@
 String branchName='develop'
 String mvnConfig='606ddd86-1cb6-42f4-9362-f2108d05a89e'
 String gitCred='github-ghughlett'
+boolean isSnapshot=false
 
 pipeline {
 	environment {
@@ -8,7 +9,7 @@ pipeline {
 	  RUN_STAGE = 'false'
 	  SKIP_PREPARE = 'true'
 	  CURRENT_VERSION = 'v1.0.7'
-	  IS_SNAPSHOT = readMavenPom(file: 'pom.xml').version.contains('SNAPSHOT')
+	  IS_SNAPSHOT = readMavenPom(file: 'pom.xml').getVersion.contains('SNAPSHOT')
 	}
 	agent any
     options {
@@ -23,7 +24,8 @@ pipeline {
 			    script {
             		branchName=env.BRANCH_NAME
             		echo branchName
-            		echo $IS_SNAPSHOT
+                	isSnapshot = readMavenPom(file: 'pom.xml').getVersion().contains('SNAPSHOT')
+            		echo isSnapshot
 			    }
                 withMaven(mavenSettingsConfig: mvnConfig) {
        				sh 'mvn clean compile help:effective-settings'
