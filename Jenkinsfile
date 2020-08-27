@@ -4,7 +4,7 @@ pipeline {
 	environment {
 	  MVN_SET = credentials('maven_secret_settings')
 	  SKIP_PREPARE = 'true'
-	  CURRENT_VERSION='v1.0.5' 
+	  CURRENT_VERSION='v1.0.5'
 	}
 	agent any
     options {
@@ -100,13 +100,22 @@ pipeline {
                 //    '''
                 //}
 
+                script {
+                    pom = readMavenPom(file: 'pom.xml')
+                    projectArtifactId = pom.getArtifactId()
+                    projectGroupId = pom.getGroupId()
+                    projectVersion = pom.getVersion()
+                    projectName = pom.getName()
+                }
+                echo "Updating ${projectArtifactId}:${projectGroupId}:{projectVersion}-SNAPSHOT"
+
                 withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                     withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
                         sh '''
                             mvn scm:validate
-                            mvn scm:checkin -Dmessage="checkin"
+                            mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
                             git tag -d $CURRENT_VERSION
-                            mvn scm:tag -Dtag="$CURRENT_VERSION"
+                            mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag="$CURRENT_VERSION"
                         '''
                     }
                 }
@@ -137,40 +146,6 @@ pipeline {
 				}
 				failure {
 					echo '!!!!!!! GitHub Deployment failed'
-					error('Stopping the build')
-				}
-			}
-		}
-        stage('Prepare Master for Next Release') {
-    	    when {
-    	        branch 'master'
-    	        environment name: 'SKIP_PREPARE', value: 'false'
-    	    }
-            steps {
-                script {
-                    pom = readMavenPom(file: 'pom.xml')
-                    projectArtifactId = pom.getArtifactId()
-                    projectGroupId = pom.getGroupId()
-                    projectVersion = pom.getVersion()
-                    projectName = pom.getName()
-                }
-                echo "Updating ${projectArtifactId}:${projectGroupId}:{projectVersion}-SNAPSHOT"
-
-                withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
-                        sh '''
-                            mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
-                            mvn scm:checkin -Dmessage="checkin"
-                        '''
-                    }
-                }
-            }
-			post {
-				success {
-					echo '******** Prepare Master for Next Release succeeded'
-				}
-				failure {
-					echo '!!!!!!! Prepare Master for Next Release failed'
 					error('Stopping the build')
 				}
 			}
