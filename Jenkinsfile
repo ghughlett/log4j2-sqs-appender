@@ -105,6 +105,7 @@ pipeline {
                         sh '''
                             mvn scm:validate
                             mvn scm:checkin -Dmessage="checkin"
+                            git tag -d $CURRENT_VERSION
                             mvn scm:tag -Dtag="$CURRENT_VERSION"
                         '''
                     }
