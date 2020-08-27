@@ -4,7 +4,9 @@ pipeline {
 	environment {
 	  MVN_SET = credentials('maven_secret_settings')
 	  SKIP_PREPARE = 'true'
-	  CURRENT_VERSION='v1.0.6'
+	  CURRENT_VERSION = 'v1.0.7'
+	  MVN_CONFIG = '606ddd86-1cb6-42f4-9362-f2108d05a89e'
+	  GIT_CRED = 'github-ghughlett'
 	}
 	agent any
     options {
@@ -20,7 +22,7 @@ pipeline {
             		branchName=env.BRANCH_NAME
             		echo branchName
 			    }
-                withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
+                withMaven(mavenSettingsConfig: $MVN_CONFIG) {
        				sh 'mvn clean compile -s $MVN_SET help:effective-settings'
                 }
 			}
@@ -36,7 +38,7 @@ pipeline {
 		}
     	stage('Unit Test') {
       		steps {
-                withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
+                withMaven(mavenSettingsConfig:  $MVN_CONFIG) {
                     sh "mvn clean test"
                 }
             }
@@ -55,7 +57,7 @@ pipeline {
     	        branch 'master'
     	    }
             steps {
-			  withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+			  withCredentials([usernamePassword(credentialsId: $GIT_CRED, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
 			    sh '''
                     touch changelog.txt
                     git log --pretty="%h - %s%b (%an)" $(git tag | tail -n1)...HEAD > changelog.txt
@@ -66,7 +68,6 @@ pipeline {
 			post {
 				success {
 				    echo '******** Release notes created'
-		            //sh 'cat CHANGELOG-music-factory.md'
 	                sh 'cat changelog.txt'
 				}
 				failure {
@@ -90,26 +91,14 @@ pipeline {
                 }
                 echo "Merging ${projectArtifactId}:${projectGroupId}:{projectVersion}"
 
-			    //withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-			    //    sh '''
-			    //        git commit -am "release ${projectArtifactId}:${projectVersion} updated"
-                //        //git remote set-url origin https://github.com/ghughlett/log4j2-sqs-appender
-                //        git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/ghughlett/log4j2-sqs-appender
-                //        git tag -f $CURRENT_VERSION
-                //        git push origin master --follow-tags
-                //    '''
-                //}
-
-                withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
+                withCredentials([usernamePassword(credentialsId: $GIT_CRED, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                    withMaven(mavenSettingsConfig:  $MVN_CONFIG) {
                         sh '''
                             mvn scm:validate
                         '''
-                        echo '--------------------'
                         sh '''
                             mvn build-helper:parse-version versions:set -DnewVersion=\'${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT\'
                         '''
-                        echo '--------------------'
                         sh '''
                             mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag=$CURRENT_VERSION
                         '''
@@ -126,13 +115,13 @@ pipeline {
 				}
 			}
 		}
-        stage('Release-Artifact Deployment') {
+        stage('Release-GitHub Artifact Deployment') {
     	    when {
     	        branch 'master'
     	        environment name: 'SKIP_PREPARE', value: 'true'
     	    }
             steps {
-                withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
+                withMaven(mavenSettingsConfig:  $MVN_CONFIG) {
          	        sh 'mvn clean deploy -s $MVN_SET'
                 }
             }
