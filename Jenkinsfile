@@ -4,7 +4,7 @@ pipeline {
 	environment {
 	  MVN_SET = credentials('maven_secret_settings')
 	  SKIP_PREPARE = 'true'
-	  CURRENT_VERSION='v1.0.5'
+	  CURRENT_VERSION='v1.0.6'
 	}
 	agent any
     options {
@@ -100,20 +100,11 @@ pipeline {
                 //    '''
                 //}
 
-                script {
-                    pom = readMavenPom(file: 'pom.xml')
-                    projectArtifactId = pom.getArtifactId()
-                    projectGroupId = pom.getGroupId()
-                    projectVersion = pom.getVersion()
-                    projectName = pom.getName()
-                }
-                echo "Updating ${projectArtifactId}:${projectGroupId}:{projectVersion}-SNAPSHOT"
-
                 withCredentials([usernamePassword(credentialsId: 'github-ghughlett', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                     withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
                         sh '''
                             mvn scm:validate
-                            mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
+                            mvn build-helper:parse-version versions:set -DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT
                             git tag -d $CURRENT_VERSION
                             mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag="$CURRENT_VERSION"
                         '''
