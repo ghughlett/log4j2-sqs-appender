@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.avioconsulting.framework</groupId>
     <artifactId>log4j2-sqs-appender</artifactId>
-    <version>1.0.21-SNAPSHOT</version>
+    <version>1.0.22-SNAPSHOT</version>
     <scm>
         <connection>scm:git:https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/ghughlett/log4j2-sqs-appender.git</connection>
         <developerConnection>scm:git:https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/ghughlett/log4j2-sqs-appender.git</developerConnection>
