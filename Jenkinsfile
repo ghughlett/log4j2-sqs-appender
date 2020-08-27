@@ -127,7 +127,7 @@ pipeline {
     	    }
             steps {
                 withMaven(mavenSettingsConfig: '606ddd86-1cb6-42f4-9362-f2108d05a89e') {
-         	        sh 'mvn clean deploy'
+         	        sh 'mvn clean deploy -s $MVN_SET'
                 }
             }
 			post {
