@@ -5,8 +5,10 @@ String gitCred='github-ghughlett'
 pipeline {
 	environment {
 	  MVN_SET = credentials('maven_secret_settings')
+	  RUN_STAGE = 'false'
 	  SKIP_PREPARE = 'true'
 	  CURRENT_VERSION = 'v1.0.7'
+	  IS_SNAPSHOT = readMavenPom(file: 'pom.xml').version.contains('SNAPSHOT')
 	}
 	agent any
     options {
@@ -21,6 +23,7 @@ pipeline {
 			    script {
             		branchName=env.BRANCH_NAME
             		echo branchName
+            		echo $IS_SNAPSHOT
 			    }
                 withMaven(mavenSettingsConfig: mvnConfig) {
        				sh 'mvn clean compile help:effective-settings'
@@ -55,6 +58,7 @@ pipeline {
     	stage('Release Notes Generation') {
     	    when {
     	        branch 'master'
+    	        environment name: 'RUN_STAGE', value: 'true'
     	    }
             steps {
 			  withCredentials([usernamePassword(credentialsId: gitCred, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
@@ -80,6 +84,7 @@ pipeline {
     	    when {
     	        branch 'master'
     	        environment name: 'SKIP_PREPARE', value: 'true'
+    	        environment name: 'RUN_STAGE', value: 'true'
     	    }
             steps {
                 script {
@@ -119,6 +124,7 @@ pipeline {
     	    when {
     	        branch 'master'
     	        environment name: 'SKIP_PREPARE', value: 'true'
+    	        environment name: 'RUN_STAGE', value: 'true'
     	    }
             steps {
                 withMaven(mavenSettingsConfig:  mvnConfig) {
