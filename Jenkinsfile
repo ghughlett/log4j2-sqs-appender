@@ -1,28 +1,20 @@
 String branchName='develop'
 String mvnConfig='606ddd86-1cb6-42f4-9362-f2108d05a89e'
-String gitCred='github-ghughlett'
+String gitHubCred='github-ghughlett'
 boolean isSnapshot=false
 
 pipeline {
 	environment {
 	  MVN_SET = credentials('maven_secret_settings')
-	  RUN_STAGE = 'false'
-	  SKIP_PREPARE = 'true'
-	  CURRENT_VERSION = 'v1.0.7'
 	  IS_SNAPSHOT = readMavenPom(file: 'pom.xml').version.endsWith('SNAPSHOT')
 	}
 	agent any
-    options {
-        timeout(time: 30) // minutes; Cloudhub deploy, check if started is an issue
-    }
     tools {
-        maven 'Maven 3.6.3-Brady'
+        maven 'Maven 3'
+        jdk 'jdk8'
     }
 	stages {
 		stage('Build') {
-    	    when {
-    	        environment name: 'IS_SNAPSHOT', value: 'true'
-    	    }
 			steps {
 			    script {
             		branchName=env.BRANCH_NAME
@@ -43,9 +35,6 @@ pipeline {
 			}
 		}
     	stage('Unit Test') {
-    	    when {
-    	        environment name: 'IS_SNAPSHOT', value: 'true'
-    	    }
       		steps {
                 withMaven(mavenSettingsConfig:  mvnConfig) {
                     sh "mvn clean test"
@@ -64,10 +53,10 @@ pipeline {
     	stage('Release Notes Generation') {
     	    when {
     	        branch 'master'
-    	        environment name: 'RUN_STAGE', value: 'true'
+    	        environment name: 'IS_SNAPSHOT', value: 'false'
     	    }
             steps {
-			  withCredentials([usernamePassword(credentialsId: gitCred, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+			  withCredentials([usernamePassword(credentialsId: gitHubCred, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
 			    sh '''
                     touch changelog.txt
                     git log --pretty="%h - %s%b (%an)" $(git tag | tail -n1)...HEAD > changelog.txt
@@ -89,8 +78,7 @@ pipeline {
         stage('Release-Merge Master') {
     	    when {
     	        branch 'master'
-    	        environment name: 'SKIP_PREPARE', value: 'true'
-    	        environment name: 'RUN_STAGE', value: 'true'
+    	        environment name: 'IS_SNAPSHOT', value: 'false'
     	    }
             steps {
                 script {
@@ -100,9 +88,10 @@ pipeline {
                     projectVersion = pom.getVersion()
                     projectName = pom.getName()
                 }
-                echo "Merging ${projectArtifactId}:${projectGroupId}:{projectVersion}"
 
-                withCredentials([usernamePassword(credentialsId: gitCred, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                echo "Merging ${projectArtifactId}:${projectGroupId}:${projectVersion}"
+
+                withCredentials([usernamePassword(credentialsId: gitHubCred, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                     withMaven(mavenSettingsConfig:  mvnConfig) {
                         sh '''
                             mvn scm:validate
@@ -110,9 +99,10 @@ pipeline {
                         sh '''
                             mvn build-helper:parse-version versions:set -DnewVersion=\'${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT\'
                         '''
-                        sh '''
-                            mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag=$CURRENT_VERSION
-                        '''
+                        echo "Using tag v\${projectVersion}"
+                        //sh '''
+                        //    mvn scm:checkin -Dmessage="checkin" scm:tag -Dtag="v\$projectVersion"
+                        //'''
                     }
                 }
             }
@@ -129,8 +119,7 @@ pipeline {
         stage('Release-GitHub Artifact Deployment') {
     	    when {
     	        branch 'master'
-    	        environment name: 'SKIP_PREPARE', value: 'true'
-    	        environment name: 'RUN_STAGE', value: 'true'
+                environment name: 'IS_SNAPSHOT', value: 'false'
     	    }
             steps {
                 withMaven(mavenSettingsConfig:  mvnConfig) {
